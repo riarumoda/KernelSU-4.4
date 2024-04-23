@@ -1,4 +1,4 @@
-**Warning: this repo is only intended to integrate KernelSU into Android with Linux Kernel 4.4. This is why manager, website, userspace, js, SECURITY.md, justfile has been removed.**
+**Warning: this repo is only intended to integrate KernelSU into Android with Linux Kernel 4.4, with old Google GCC 4.9. This is why manager, website, userspace, js, SECURITY.md, justfile has been removed.**
 
 # KernelSU
 
@@ -24,8 +24,8 @@ A Kernel-based root solution for Android devices.
 ## Usage
 
 - [Integrate KernelSU into your kernel](https://kernelsu.org/guide/how-to-integrate-for-non-gki.html)
-- [SELinux patch to make modules working properly](https://github.com/F-19-F/android_kernel_oneplus_msm8998/commit/1042d5601a1c0db08c9a9cea89d1895e74576a27)
-- [Official Website](https://kernelsu.org/)
+- [SELinux patch to make modules working properly on Linux Kernel 4.9 and lower](https://github.com/F-19-F/android_kernel_oneplus_msm8998/commit/1042d5601a1c0db08c9a9cea89d1895e74576a27)
+- [KernelSU Official Website](https://kernelsu.org/)
 
 ## Discussion
 
