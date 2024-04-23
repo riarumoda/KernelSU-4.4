@@ -402,14 +402,14 @@ int ksu_handle_prctl(int option, unsigned long arg2, unsigned long arg3,
 				ksu_get_allow_list(array, &array_length,
 						   arg2 == CMD_GET_ALLOW_LIST);
 			if (success) {
-				if (!copy_to_user(arg4, &array_length,
-						  sizeof(array_length)) &&
-				    !copy_to_user(arg3, array,
-						  sizeof(u32) * array_length)) {
-					if (copy_to_user(result, &reply_ok,
-							 sizeof(reply_ok))) {
+				if (!copy_to_user((void __user *)arg4, &array_length,
+					sizeof(array_length)) &&
+					!copy_to_user((void __user *)arg3, array,
+								  sizeof(u32) * array_length)) {
+					if (copy_to_user((void __user *)result, &reply_ok,
+						sizeof(reply_ok))) {
 						pr_err("prctl reply error, cmd: %lu\n",
-						       arg2);
+							   arg2);
 					}
 				} else {
 					pr_err("prctl copy allowlist error\n");
@@ -430,9 +430,9 @@ int ksu_handle_prctl(int option, unsigned long arg2, unsigned long arg3,
 			} else {
 				pr_err("unknown cmd: %lu\n", arg2);
 			}
-			if (!copy_to_user(arg4, &allow, sizeof(allow))) {
-				if (copy_to_user(result, &reply_ok,
-						 sizeof(reply_ok))) {
+			if (!copy_to_user((void __user *)arg4, &allow, sizeof(allow))) {
+				if (copy_to_user((void __user *)result, &reply_ok,
+					sizeof(reply_ok))) {
 					pr_err("prctl reply error, cmd: %lu\n",
 					       arg2);
 				}
@@ -452,18 +452,18 @@ int ksu_handle_prctl(int option, unsigned long arg2, unsigned long arg3,
 	// we are already manager
 	if (arg2 == CMD_GET_APP_PROFILE) {
 		struct app_profile profile;
-		if (copy_from_user(&profile, arg3, sizeof(profile))) {
+		if (copy_from_user(&profile, (void __user *)arg3, sizeof(profile))) {
 			pr_err("copy profile failed\n");
 			return 0;
 		}
 
 		bool success = ksu_get_app_profile(&profile);
 		if (success) {
-			if (copy_to_user(arg3, &profile, sizeof(profile))) {
+			if (copy_to_user((void __user *)arg3, &profile, sizeof(profile))) {
 				pr_err("copy profile failed\n");
 				return 0;
 			}
-			if (copy_to_user(result, &reply_ok, sizeof(reply_ok))) {
+			if (copy_to_user((void __user *)result, &reply_ok, sizeof(reply_ok))) {
 				pr_err("prctl reply error, cmd: %lu\n", arg2);
 			}
 		}
@@ -472,14 +472,14 @@ int ksu_handle_prctl(int option, unsigned long arg2, unsigned long arg3,
 
 	if (arg2 == CMD_SET_APP_PROFILE) {
 		struct app_profile profile;
-		if (copy_from_user(&profile, arg3, sizeof(profile))) {
+		if (copy_from_user(&profile, (void __user *)arg3, sizeof(profile))) {
 			pr_err("copy profile failed\n");
 			return 0;
 		}
 
 		// todo: validate the params
 		if (ksu_set_app_profile(&profile, true)) {
-			if (copy_to_user(result, &reply_ok, sizeof(reply_ok))) {
+			if (copy_to_user((void __user *)result, &reply_ok, sizeof(reply_ok))) {
 				pr_err("prctl reply error, cmd: %lu\n", arg2);
 			}
 		}
