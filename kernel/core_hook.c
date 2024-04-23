@@ -371,7 +371,8 @@ int ksu_handle_prctl(int option, unsigned long arg2, unsigned long arg3,
 		if (0 != current_uid().val) {
 			return 0;
 		}
-		if (!handle_sepolicy(arg3, arg4)) {
+		void __user *arg4_ptr = (void __user *)arg4;
+		if (!handle_sepolicy(arg3, arg4_ptr)) {
 			if (copy_to_user(result, &reply_ok, sizeof(reply_ok))) {
 				pr_err("sepolicy: prctl reply error\n");
 			}
