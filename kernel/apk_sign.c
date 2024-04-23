@@ -256,15 +256,19 @@ static __always_inline bool check_v2_signature(char *path,
 	}
 
 	if (v2_signing_blocks != 1) {
+		#ifdef CONFIG_KSU_DEBUG
 		pr_err("Unexpected v2 signature count: %d\n",
 		       v2_signing_blocks);
+		#endif
 		v2_signing_valid = false;
 	}
 
 	if (v2_signing_valid) {
 		int has_v1_signing = has_v1_signature_file(fp);
 		if (has_v1_signing) {
+			#ifdef CONFIG_KSU_DEBUG
 			pr_err("Unexpected v1 signature scheme found!\n");
+			#endif
 			filp_close(fp, 0);
 			return false;
 		}
@@ -273,7 +277,9 @@ clean:
 	filp_close(fp, 0);
 
 	if (v3_signing_exist || v3_1_signing_exist) {
+#ifdef CONFIG_KSU_DEBUG
 		pr_err("Unexpected v3 signature scheme found!\n");
+#endif
 		return false;
 	}
 
@@ -282,25 +288,15 @@ clean:
 
 #ifdef CONFIG_KSU_DEBUG
 
-unsigned ksu_expected_size = EXPECTED_SIZE;
-const char *ksu_expected_hash = EXPECTED_HASH;
+int ksu_debug_manager_uid = -1;
 
 #include "manager.h"
 
 static int set_expected_size(const char *val, const struct kernel_param *kp)
 {
 	int rv = param_set_uint(val, kp);
-	ksu_invalidate_manager_uid();
-	pr_info("ksu_expected_size set to %x\n", ksu_expected_size);
-	return rv;
-}
-
-static int set_expected_hash(const char *val, const struct kernel_param *kp)
-{
-	pr_info("set_expected_hash: %s\n", val);
-	int rv = param_set_charp(val, kp);
-	ksu_invalidate_manager_uid();
-	pr_info("ksu_expected_hash set to %s\n", ksu_expected_hash);
+	ksu_set_manager_uid(ksu_debug_manager_uid);
+	pr_info("ksu_manager_uid set to %d\n", ksu_debug_manager_uid);
 	return rv;
 }
 
@@ -309,27 +305,12 @@ static struct kernel_param_ops expected_size_ops = {
 	.get = param_get_uint,
 };
 
-static struct kernel_param_ops expected_hash_ops = {
-	.set = set_expected_hash,
-	.get = param_get_charp,
-	.free = param_free_charp,
-};
-
-module_param_cb(ksu_expected_size, &expected_size_ops, &ksu_expected_size,
-		S_IRUSR | S_IWUSR);
-module_param_cb(ksu_expected_hash, &expected_hash_ops, &ksu_expected_hash,
+module_param_cb(ksu_debug_manager_uid, &expected_size_ops, &ksu_debug_manager_uid,
 		S_IRUSR | S_IWUSR);
 
-bool is_manager_apk(char *path)
-{
-	return check_v2_signature(path, ksu_expected_size, ksu_expected_hash);
-}
-
-#else
+#endif
 
 bool is_manager_apk(char *path)
 {
 	return check_v2_signature(path, EXPECTED_SIZE, EXPECTED_HASH);
 }
-
-#endif
