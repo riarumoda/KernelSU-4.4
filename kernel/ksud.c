@@ -1,25 +1,24 @@
-#include "asm/current.h"
-#include "linux/compat.h"
-#include "linux/cred.h"
-#include "linux/dcache.h"
-#include "linux/err.h"
-#include "linux/file.h"
-#include "linux/fs.h"
-#include "linux/version.h"
+#include <asm/current.h>
+#include <linux/compat.h>
+#include <linux/cred.h>
+#include <linux/dcache.h>
+#include <linux/err.h>
+#include <linux/file.h>
+#include <linux/fs.h>
+#include <linux/version.h>
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 4, 0)
-#include "linux/input-event-codes.h"
+#include <linux/input-event-codes.h>
 #else
-#include "uapi/linux/input.h"
+#include <uapi/linux/input.h>
 #endif
 #if LINUX_VERSION_CODE < KERNEL_VERSION(4, 1, 0)
-#include "linux/aio.h"
+#include <linux/aio.h>
 #endif
-#include "linux/kprobes.h"
-#include "linux/printk.h"
-#include "linux/types.h"
-#include "linux/uaccess.h"
-#include "linux/version.h"
-#include "linux/workqueue.h"
+#include <linux/kprobes.h>
+#include <linux/printk.h>
+#include <linux/types.h>
+#include <linux/uaccess.h>
+#include <linux/workqueue.h>
 
 #include "allowlist.h"
 #include "arch.h"
@@ -514,7 +513,7 @@ static int sys_read_handler_pre(struct kprobe *p, struct pt_regs *regs)
 	struct pt_regs *real_regs = PT_REAL_REGS(regs);
 	unsigned int fd = PT_REGS_PARM1(real_regs);
 	char __user **buf_ptr = (char __user **)&PT_REGS_PARM2(real_regs);
-	size_t count_ptr = (size_t *) &PT_REGS_PARM3(real_regs);
+	size_t count_ptr = (size_t *)&PT_REGS_PARM3(real_regs);
 
 	return ksu_handle_sys_read(fd, buf_ptr, count_ptr);
 }

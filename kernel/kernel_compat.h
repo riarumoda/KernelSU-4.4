@@ -1,9 +1,9 @@
 #ifndef __KSU_H_KERNEL_COMPAT
 #define __KSU_H_KERNEL_COMPAT
 
-#include "linux/fs.h"
+#include <linux/fs.h>
+#include <linux/version.h>
 #include "linux/key.h"
-#include "linux/version.h"
 
 extern long ksu_strncpy_from_user_nofault(char *dst,
 					  const void __user *unsafe_addr,
